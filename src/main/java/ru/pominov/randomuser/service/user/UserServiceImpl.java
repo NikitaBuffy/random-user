@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.pominov.randomuser.model.user.User;
 import ru.pominov.randomuser.repository.UserRepository;
 import ru.pominov.randomuser.service.export.ExportStrategy;
@@ -34,11 +36,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void getFromDatabase(String exportMethod, int numberOfUsers) {
+        List<User> users;
         try {
             // Выбор метода экспорта с применением паттерна проектирования 'Стратегия' с помощью ExportStrategyFactory
             ExportStrategy exportStrategy = exportStrategyFactory.createExportStrategy(exportMethod);
-            // Выгрузка пользователей из БД с учетом количества
-            List<User> users = userRepository.findAll();
+            if (numberOfUsers == 0) {
+                // Выгрузка всех пользователей из БД
+                users = userRepository.findAllOptimized();
+            }
+            else {
+                Pageable pageable = PageRequest.of(0, numberOfUsers);
+                // TODO: решить проблему N + 1 запроса в Hibernate
+                users = userRepository.findAll(pageable).getContent();
+            }
+
+            if (users.isEmpty()) {
+                log.debug("Cannot export users because database is empty.");
+                System.out.println("\nВ БД отсутствуют пользователи, выгрузка недоступна.\n");
+                return;
+            }
+
             // Экспорт пользователей на основе выбранного метода
             exportStrategy.export(users);
         } catch (IllegalArgumentException e) {

@@ -24,18 +24,17 @@ public class ApplicationRunner implements CommandLineRunner {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Какое действие вы хотите сделать?");
+            System.out.println("\nКакое действие вы хотите сделать?");
             System.out.println("1. Загрузить пользователей в БД");
-            System.out.println("2. Выгрузить пользователей в CSV");
-            System.out.println("3. Выгрузить пользователей в Excel");
-            System.out.println("4. Выйти из приложения");
+            System.out.println("2. Выгрузить пользователей из БД");
+            System.out.println("3. Выйти из приложения");
             System.out.print("Введите номер действия: ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Некорректный ввод. Пожалуйста, введите номер действия.");
+                System.out.println("\nНекорректный ввод. Пожалуйста, введите номер действия.");
                 continue;
             }
 
@@ -44,16 +43,13 @@ public class ApplicationRunner implements CommandLineRunner {
                     loadToDatabaseOption();
                     break;
                 case 2:
-                    exportToCSVOption();
+                    exportOption();
                     break;
                 case 3:
-                    exportToExcelOption();
-                    break;
-                case 4:
-                    System.out.println("Выход из приложения.");
+                    System.out.println("\nВыход из приложения.");
                     return;
                 default:
-                    System.out.println("Некорректный ввод. Пожалуйста, выберите одно из доступных действий.");
+                    System.out.println("\nНекорректный ввод. Пожалуйста, выберите одно из доступных действий.");
             }
         }
     }
@@ -77,7 +73,7 @@ public class ApplicationRunner implements CommandLineRunner {
             if (parts.length == 2) {
                 params.put(parts[0].trim(), parts[1].trim());
             } else {
-                System.out.println("Некорректный ввод. Попробуйте снова.");
+                System.out.println("\nНекорректный ввод. Попробуйте снова.");
             }
         }
 
@@ -98,19 +94,59 @@ public class ApplicationRunner implements CommandLineRunner {
         System.out.println("---------------------------------------------------------------------------------------------------");
     }
 
-    private void exportToCSVOption() {
-        log.info("Вызван экспорт пользователей в CSV.");
-        System.out.print("Введите количество пользователей для экспорта: ");
+    private void exportOption() {
         Scanner scanner = new Scanner(System.in);
-        int numberOfUsers = scanner.nextInt();
-        userService.getFromDatabase("CSV", numberOfUsers);
-    }
+        System.out.println("\nВ каком формате необходима выгрузка?");
+        System.out.println("1. CSV");
+        System.out.println("2. Excel");
+        System.out.println("3. Возврат в предыдущее меню");
+        System.out.print("Введите номер действия: ");
 
-    private void exportToExcelOption() {
-        log.info("Вызван экспорт пользователей в Excel.");
-        System.out.print("Введите количество пользователей для экспорта: ");
-        Scanner scanner = new Scanner(System.in);
-        int numberOfUsers = scanner.nextInt();
-        userService.getFromDatabase("Excel", numberOfUsers);
+        int choice;
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("\nНекорректный ввод. Пожалуйста, введите номер действия.");
+            exportOption();
+            return;
+        }
+
+        switch (choice) {
+            case 1:
+                System.out.println("\nВведите количество пользователей для выгрузки в CSV или 'all' для выгрузки всех:");
+                String countInput = scanner.nextLine();
+                if (countInput.equalsIgnoreCase("all")) {
+                    // Помечаем 0 как условие, что необходима выгрузка всех пользователей
+                    userService.getFromDatabase("CSV", 0);
+                } else {
+                    try {
+                        int count = Integer.parseInt(countInput);
+                        userService.getFromDatabase("CSV", count);
+                    } catch (NumberFormatException e) {
+                        System.out.println("\nНекорректный ввод количества пользователей.");
+                    }
+                }
+                break;
+            case 2:
+                System.out.println("\nВведите количество пользователей для выгрузки в Excel или 'all' для выгрузки всех:");
+                String countInputExcel = scanner.nextLine();
+                if (countInputExcel.equalsIgnoreCase("all")) {
+                    // Помечаем 0 как условие, что необходима выгрузка всех пользователей
+                    userService.getFromDatabase("Excel", 0);
+                } else {
+                    try {
+                        int count = Integer.parseInt(countInputExcel);
+                        userService.getFromDatabase("Excel", count);
+                    } catch (NumberFormatException e) {
+                        System.out.println("\nНекорректный ввод количества пользователей.");
+                    }
+                }
+                break;
+            case 3:
+                return;
+            default:
+                System.out.println("\nНекорректный ввод. Пожалуйста, выберите одно из доступных действий.");
+                exportOption();
+        }
     }
 }
