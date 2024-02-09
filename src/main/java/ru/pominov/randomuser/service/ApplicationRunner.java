@@ -26,8 +26,9 @@ public class ApplicationRunner implements CommandLineRunner {
         while (true) {
             System.out.println("Какое действие вы хотите сделать?");
             System.out.println("1. Загрузить пользователей в БД");
-            System.out.println("2. Выгрузить пользователей из БД в CSV");
-            System.out.println("3. Выйти из приложения");
+            System.out.println("2. Выгрузить пользователей в CSV");
+            System.out.println("3. Выгрузить пользователей в Excel");
+            System.out.println("4. Выйти из приложения");
             System.out.print("Введите номер действия: ");
 
             int choice;
@@ -43,9 +44,12 @@ public class ApplicationRunner implements CommandLineRunner {
                     loadToDatabaseOption();
                     break;
                 case 2:
-//                    exportToCSV();
+                    exportToCSVOption();
                     break;
                 case 3:
+                    exportToExcelOption();
+                    break;
+                case 4:
                     System.out.println("Выход из приложения.");
                     return;
                 default:
@@ -92,5 +96,21 @@ public class ApplicationRunner implements CommandLineRunner {
         System.out.println("| inc      | gender, name, location, email, login, registered, dob, phone, cell, id, picture, nat |");
         System.out.println("| exc      | gender, name, location, email, login, registered, dob, phone, cell, id, picture, nat |");
         System.out.println("---------------------------------------------------------------------------------------------------");
+    }
+
+    private void exportToCSVOption() {
+        log.info("Вызван экспорт пользователей в CSV.");
+        System.out.print("Введите количество пользователей для экспорта: ");
+        Scanner scanner = new Scanner(System.in);
+        int numberOfUsers = scanner.nextInt();
+        userService.getFromDatabase("CSV", numberOfUsers);
+    }
+
+    private void exportToExcelOption() {
+        log.info("Вызван экспорт пользователей в Excel.");
+        System.out.print("Введите количество пользователей для экспорта: ");
+        Scanner scanner = new Scanner(System.in);
+        int numberOfUsers = scanner.nextInt();
+        userService.getFromDatabase("Excel", numberOfUsers);
     }
 }

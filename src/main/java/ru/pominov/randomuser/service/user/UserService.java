@@ -4,5 +4,5 @@ public interface UserService {
 
     void saveToDatabase(String userJsonData);
 
-    void getFromDatabase();
+    void getFromDatabase(String exportMethod, int numberOfUsers);
 }
