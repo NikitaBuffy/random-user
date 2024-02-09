@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Component;
-import ru.pominov.randomuser.model.user.User;
-import ru.pominov.randomuser.model.user.UserLocation;
-import ru.pominov.randomuser.model.user.UserPicture;
-import ru.pominov.randomuser.model.user.UserLogin;
+import ru.pominov.randomuser.model.User;
+import ru.pominov.randomuser.model.UserLocation;
+import ru.pominov.randomuser.model.UserPicture;
+import ru.pominov.randomuser.model.UserLogin;
 
 import java.io.FileWriter;
 import java.io.IOException;

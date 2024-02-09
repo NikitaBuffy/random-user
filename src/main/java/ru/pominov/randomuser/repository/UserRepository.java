@@ -2,7 +2,7 @@ package ru.pominov.randomuser.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.pominov.randomuser.model.user.User;
+import ru.pominov.randomuser.model.User;
 
 import java.util.List;
 

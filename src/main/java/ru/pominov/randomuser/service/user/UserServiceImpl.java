@@ -2,17 +2,20 @@ package ru.pominov.randomuser.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.pominov.randomuser.model.user.User;
+import ru.pominov.randomuser.model.User;
 import ru.pominov.randomuser.repository.UserRepository;
+import ru.pominov.randomuser.service.RandomUserMeClient;
 import ru.pominov.randomuser.service.export.ExportStrategy;
 import ru.pominov.randomuser.service.export.ExportStrategyFactory;
 import ru.pominov.randomuser.util.JsonDeserializer;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -22,13 +25,16 @@ public class UserServiceImpl implements UserService {
     private final JsonDeserializer jsonDeserializer;
     private final UserRepository userRepository;
     private final ExportStrategyFactory exportStrategyFactory;
+    private final RandomUserMeClient randomUserMeClient;
 
     @Override
     @Transactional
-    public void saveToDatabase(String userJsonData) {
-        System.out.println(userJsonData);
+    public void saveToDatabase(Map<String, String> params) {
+        // Получение пользователей из API
+        ResponseEntity<String> response = randomUserMeClient.getRandomUsers(params);
+
         // Десериализация данных из JSON в список пользователей
-        List<User> users = jsonDeserializer.deserialize(userJsonData);
+        List<User> users = jsonDeserializer.deserialize(response.getBody());
 
         List<User> savedUsers = userRepository.saveAll(users);
         log.info("Saved users to Database: {}", savedUsers);

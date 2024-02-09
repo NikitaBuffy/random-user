@@ -9,10 +9,10 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
-import ru.pominov.randomuser.model.user.User;
-import ru.pominov.randomuser.model.user.UserLocation;
-import ru.pominov.randomuser.model.user.UserLogin;
-import ru.pominov.randomuser.model.user.UserPicture;
+import ru.pominov.randomuser.model.User;
+import ru.pominov.randomuser.model.UserLocation;
+import ru.pominov.randomuser.model.UserLogin;
+import ru.pominov.randomuser.model.UserPicture;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

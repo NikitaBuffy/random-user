@@ -1,6 +1,6 @@
 package ru.pominov.randomuser.service.export;
 
-import ru.pominov.randomuser.model.user.User;
+import ru.pominov.randomuser.model.User;
 import java.util.List;
 
 public interface ExportStrategy {

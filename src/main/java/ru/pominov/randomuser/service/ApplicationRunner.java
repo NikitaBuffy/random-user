@@ -3,7 +3,6 @@ package ru.pominov.randomuser.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ru.pominov.randomuser.service.user.UserService;
 
@@ -16,7 +15,6 @@ import java.util.Scanner;
 @RequiredArgsConstructor
 public class ApplicationRunner implements CommandLineRunner {
 
-    private final RandomUserMeClient randomUserMeClient;
     private final UserService userService;
 
     @Override
@@ -77,8 +75,7 @@ public class ApplicationRunner implements CommandLineRunner {
             }
         }
 
-        ResponseEntity<String> response = randomUserMeClient.getRandomUsers(params);
-        userService.saveToDatabase(response.getBody());
+        userService.saveToDatabase(params);
     }
 
     private void displayAvailableValues() {

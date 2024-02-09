@@ -1,4 +1,4 @@
-package ru.pominov.randomuser.model.user;
+package ru.pominov.randomuser.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
