@@ -36,10 +36,10 @@ public class UserLocation {
     private String postcode;
 
     @Column(name = "latitude")
-    private float lat;
+    private Float lat;
 
     @Column(name = "longitude")
-    private float lon;
+    private Float lon;
 
     @Column(name = "tz_offset")
     private String timezoneOffset;

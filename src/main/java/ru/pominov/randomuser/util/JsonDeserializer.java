@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ru.pominov.randomuser.model.User;
 import ru.pominov.randomuser.model.UserLocation;
 import ru.pominov.randomuser.model.UserLogin;
-import ru.pominov.randomuser.model.UserPicture;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -79,13 +78,11 @@ public class JsonDeserializer {
         }
 
         if (userObject.has("picture")) {
-            UserPicture userPicture = new UserPicture();
             /* API RandomUserMe позволяет убирать/добавлять только весь объект 'picture' целиком,
                поэтому проверка на наличие внутренних полей не требуется */
-            userPicture.setLarge(userObject.getAsJsonObject("picture").get("large").getAsString());
-            userPicture.setMedium(userObject.getAsJsonObject("picture").get("medium").getAsString());
-            userPicture.setThumbnail(userObject.getAsJsonObject("picture").get("thumbnail").getAsString());
-            user.setUserPicture(userPicture);
+            user.setLargePicture(userObject.getAsJsonObject("picture").get("large").getAsString());
+            user.setMediumPicture(userObject.getAsJsonObject("picture").get("medium").getAsString());
+            user.setThumbnailPicture(userObject.getAsJsonObject("picture").get("thumbnail").getAsString());
         }
 
         if (userObject.has("location")) {

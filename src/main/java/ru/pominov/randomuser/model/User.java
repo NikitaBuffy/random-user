@@ -54,9 +54,14 @@ public class User {
     @Column(name = "registration_age")
     private Integer registrationAge;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_pictures_id")
-    private UserPicture userPicture;
+    @Column(name = "large_picture")
+    private String largePicture;
+
+    @Column(name = "medium_picture")
+    private String mediumPicture;
+
+    @Column(name = "thumbnail_picture")
+    private String thumbnailPicture;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_location_id")

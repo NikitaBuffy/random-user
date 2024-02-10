@@ -6,62 +6,71 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Component;
 import ru.pominov.randomuser.model.User;
 import ru.pominov.randomuser.model.UserLocation;
-import ru.pominov.randomuser.model.UserPicture;
 import ru.pominov.randomuser.model.UserLogin;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 @Slf4j
 public class CsvExporter implements ExportStrategy {
 
+    /* Вынес на уровне константы, но есть и другие опциональные решения:
+     * 1. Вынесение в properties
+     * 2. Позволить пользователю самому передать путь файла
+     */
+    private static final String CSV_FILE_PATH = "users.csv";
+
     @Override
     public void export(List<User> users) {
-        String csvFilePath = "users.csv";
-
-        try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFilePath), CSVFormat.DEFAULT)) {
+        // Подразумеваем, что потенциально будет много записей, поэтому создаем BufferedWriter
+        try (CSVPrinter printer = new CSVPrinter(new BufferedWriter(new FileWriter(CSV_FILE_PATH)), CSVFormat.DEFAULT)) {
             printer.printRecord("ID", "Title", "FirstName", "LastName", "E-mail", "Phone", "Cell", "Gender",
                     "Age", "DateOfBirth", "Nationality", "Registered", "RegistrationAge", "LargePicture", "MediumPicture",
                     "ThumbnailPicture", "City", "StreetName", "StreetNumber", "State", "Country", "Postcode", "Latitude",
                     "Longitude", "TimezoneOffset", "TimezoneDescription", "UUID", "Username");
 
             for (User user : users) {
+                UserLocation userLocation = user.getUserLocation();
+                UserLogin userLogin = user.getUserLogin();
                 printer.printRecord(
+                        // Использование тернарных операторов и Optional выглядит избыточно для проверки на null,
+                        // исключения NPE не будет, ячейка просто будет пустая (касается полей User)
                         user.getId(),
-                        // Используем Optional, так как поля в объекте могут отсутствовать после загрузки с параметрами API RandomUserMe
-                        Optional.ofNullable(user.getTitle()).orElse(null),
-                        Optional.ofNullable(user.getFirstName()).orElse(null),
-                        Optional.ofNullable(user.getLastName()).orElse(null),
-                        Optional.ofNullable(user.getEmail()).orElse(null),
-                        Optional.ofNullable(user.getPhone()).orElse(null),
-                        Optional.ofNullable(user.getCell()).orElse(null),
-                        Optional.ofNullable(user.getGender()).orElse(null),
-                        Optional.ofNullable(user.getAge()).orElse(null),
-                        Optional.ofNullable(user.getDateOfBirth()).orElse(null),
-                        Optional.ofNullable(user.getNationality()).orElse(null),
-                        Optional.ofNullable(user.getRegistered()).orElse(null),
-                        Optional.ofNullable(user.getRegistrationAge()).orElse(null),
-                        Optional.ofNullable(user.getUserPicture()).map(UserPicture::getLarge).orElse(null),
-                        Optional.ofNullable(user.getUserPicture()).map(UserPicture::getMedium).orElse(null),
-                        Optional.ofNullable(user.getUserPicture()).map(UserPicture::getThumbnail).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getCity).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getStreetName).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getStreetNumber).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getState).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getCountry).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getPostcode).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getLat).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getLon).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getTimezoneOffset).orElse(null),
-                        Optional.ofNullable(user.getUserLocation()).map(UserLocation::getTimezoneDescription).orElse(null),
-                        Optional.ofNullable(user.getUserLogin()).map(UserLogin::getUuid).orElse(null),
-                        Optional.ofNullable(user.getUserLogin()).map(UserLogin::getUsername).orElse(null)
+                        user.getTitle(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getPhone(),
+                        user.getCell(),
+                        user.getGender(),
+                        user.getAge(),
+                        user.getDateOfBirth(),
+                        user.getNationality(),
+                        user.getRegistered(),
+                        user.getRegistrationAge(),
+                        user.getLargePicture(),
+                        user.getMediumPicture(),
+                        user.getThumbnailPicture(),
+                        userLocation != null ? userLocation.getCity() : null,
+                        userLocation != null ? userLocation.getStreetName() : null,
+                        userLocation != null ? userLocation.getStreetNumber() : null,
+                        userLocation != null ? userLocation.getState() : null,
+                        userLocation != null ? userLocation.getCountry() : null,
+                        userLocation != null ? userLocation.getPostcode() : null,
+                        userLocation != null ? userLocation.getLat() : null,
+                        userLocation != null ? userLocation.getLat() : null,
+                        userLocation != null ? userLocation.getTimezoneOffset() : null,
+                        userLocation != null ? userLocation.getTimezoneDescription() : null,
+                        // Просто ради примера вместо обычного тернарного сделал свой общего назначения
+                        getValueOrDefault(userLogin, UserLogin::getUuid),
+                        getValueOrDefault(userLogin, UserLogin::getUsername)
                 );
             }
-            log.info("Successful export to CSV file '{}'", csvFilePath);
+            log.info("Successful export to CSV file '{}'", CSV_FILE_PATH);
             System.out.println("\nУспешная выгрузка. CSV файл создан в корневой директории проекта.");
 
         } catch (IOException e) {
@@ -69,4 +78,9 @@ public class CsvExporter implements ExportStrategy {
             System.out.println("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
         }
     }
+
+    private <T, R> R getValueOrDefault(T obj, Function<T, R> getter) {
+        return obj != null ? getter.apply(obj) : null;
+    }
+
 }

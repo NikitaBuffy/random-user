@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.HttpStatusCodeException;
 import ru.pominov.randomuser.model.User;
 import ru.pominov.randomuser.repository.UserRepository;
 import ru.pominov.randomuser.service.RandomUserMeClient;
@@ -30,14 +31,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveToDatabase(Map<String, String> params) {
-        // Получение пользователей из API
-        ResponseEntity<String> response = randomUserMeClient.getRandomUsers(params);
+        try {
+            // Получение пользователей из API
+            ResponseEntity<String> response = randomUserMeClient.getRandomUsers(params);
 
-        // Десериализация данных из JSON в список пользователей
-        List<User> users = jsonDeserializer.deserialize(response.getBody());
+            // Десериализация данных из JSON в список пользователей
+            List<User> users = jsonDeserializer.deserialize(response.getBody());
 
-        List<User> savedUsers = userRepository.saveAll(users);
-        log.info("Saved users to Database: {}", savedUsers);
+            List<User> savedUsers = userRepository.saveAll(users);
+            log.info("Saved users to Database: {}", savedUsers);
+        } catch (HttpStatusCodeException e) {
+            System.out.println("\nНевозможно загрузить в БД. Сервер вернул ответ: " + e.getStatusCode());
+        }
     }
 
     @Override
@@ -49,23 +54,21 @@ public class UserServiceImpl implements UserService {
             if (numberOfUsers == 0) {
                 // Выгрузка всех пользователей из БД
                 users = userRepository.findAllOptimized();
-            }
-            else {
+            } else {
                 Pageable pageable = PageRequest.of(0, numberOfUsers);
-                // TODO: решить проблему N + 1 запроса в Hibernate
-                users = userRepository.findAll(pageable).getContent();
+                users = userRepository.findNOptimized(pageable).getContent();
             }
 
             if (users.isEmpty()) {
                 log.debug("Cannot export users because database is empty.");
-                System.out.println("\nВ БД отсутствуют пользователи, выгрузка недоступна.\n");
+                System.out.println("\nВ БД отсутствуют пользователи, выгрузка недоступна.");
                 return;
             }
 
             // Экспорт пользователей на основе выбранного метода
             exportStrategy.export(users);
         } catch (IllegalArgumentException e) {
-            System.out.println("\nДанный метод не поддерживается.\n");
+            System.out.println("\nДанный метод не поддерживается.");
         }
     }
 }
