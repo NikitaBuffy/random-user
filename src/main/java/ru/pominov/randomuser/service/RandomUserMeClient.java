@@ -10,6 +10,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
+/**
+ * Класс для отправки запроса на получение пользователей в сервис RandomUserMeClient
+ */
 @Service
 @Slf4j
 public class RandomUserMeClient {
@@ -23,6 +26,13 @@ public class RandomUserMeClient {
         this.serverUrl = serverUrl;
     }
 
+    /**
+     * Метод принимает список параметров (могут отсутствовать) и строит URL для отправки запроса.
+     *
+     * @param params Набор параметров для отправки запроса на получение пользователей
+     *               (прописывается в консоли пользователем, есть подсказка)
+     * @return Ответ запроса или пробрасывается исключение HttpStatusCodeException, если ответ сервера 4xx или 5xx
+     */
     public ResponseEntity<String> getRandomUsers(Map<String, String> params) {
         try {
             // Построение URL с параметрами

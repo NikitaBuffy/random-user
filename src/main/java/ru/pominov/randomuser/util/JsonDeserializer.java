@@ -20,6 +20,10 @@ import java.util.UUID;
 @Component
 public class JsonDeserializer {
 
+    /**
+     * @param jsonString JSON, полученный в теле ответа
+     * @return Список сущностей пользователей
+     */
     public List<User> deserialize(String jsonString) {
         List<User> users = new ArrayList<>();
         JsonArray jsonArray = JsonParser.parseString(jsonString).getAsJsonObject().getAsJsonArray("results");
@@ -32,9 +36,11 @@ public class JsonDeserializer {
     }
 
     /**
-     * Метод десериализует JSON с данными пользователя и преобразует в объект User
+     * Метод десериализует JSON с данными пользователя и преобразует в объект User.
      * Так как API RandomUserMe позволяет управлять выборкой данных путем указания специальных параметров в запросе,
-     * перед сеттером происходит проверка на наличие поля в JSON
+     * перед сеттером происходит проверка на наличие поля в JSON.
+     * Так как изначальный JSON имеет структуру с вложенными объектами, написал свой десериализатор на основе созданных
+     * объектов User, UserLocation и UserLogin.
      *
      * @param userObject JSON с пользователем
      * @return десериализованный из JSON объект User

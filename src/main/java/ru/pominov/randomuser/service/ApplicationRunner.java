@@ -10,6 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Класс для консольного взаимодействия с пользователем.
+ * Имплементирует интерфейс CommandLineRunner для создания консольного приложения, а не веб.
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class ApplicationRunner implements CommandLineRunner {
 
     private final UserService userService;
 
+    // Код, запускающийся при старте приложения
     @Override
     public void run(String... args) throws Exception {
         Scanner scanner = new Scanner(System.in);

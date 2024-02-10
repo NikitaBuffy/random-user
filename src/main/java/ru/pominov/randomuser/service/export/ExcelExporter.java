@@ -19,6 +19,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Класс для экспорта списка пользователей в формат Excel.
+ * Имплементирует интерфейс ExportStrategy с переопределением единственного метода export().
+ */
 @Component
 @Slf4j
 public class ExcelExporter implements ExportStrategy {

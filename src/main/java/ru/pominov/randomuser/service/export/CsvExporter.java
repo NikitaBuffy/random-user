@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Класс для экспорта списка пользователей в формат CSV.
+ * Имплементирует интерфейс ExportStrategy с переопределением единственного метода export().
+ */
 @Component
 @Slf4j
 public class CsvExporter implements ExportStrategy {
@@ -55,6 +59,7 @@ public class CsvExporter implements ExportStrategy {
                         user.getLargePicture(),
                         user.getMediumPicture(),
                         user.getThumbnailPicture(),
+                        // Для вложенного объекта используем тернарный оператор
                         userLocation != null ? userLocation.getCity() : null,
                         userLocation != null ? userLocation.getStreetName() : null,
                         userLocation != null ? userLocation.getStreetNumber() : null,
